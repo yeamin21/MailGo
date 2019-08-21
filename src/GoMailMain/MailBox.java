@@ -25,6 +25,7 @@ public final class MailBox extends javax.swing.JFrame {
     Connection con = ConnectDB.connect();
     static ArrayList<Mails> mails = new ArrayList<>();
      static String sender[]=new String[100000];
+     static int date[]=new int[100000];
 
     public MailBox() {
         initComponents();
@@ -36,14 +37,32 @@ public final class MailBox extends javax.swing.JFrame {
    void SortBySender()
     {
         for (int i = 0; i < mails.size(); i++) {
-          sender[i]=mails.get(i).getSender();
+         date[i]=mails.get(i).getDate();
         }
         
-        for (int i = 0; i < mails.size(); i++) {
-          if(sender[i]==mails.get(i).getSender())
-          {
-             
-          }
+          int temp = 0;  
+          int n=mails.size();
+         for(int i=0; i <n ; i++){  
+                 for(int j=1; j < (n-i); j++){  
+                          if(date[j-1] > date[j]){  
+                            
+                            temp = date[j-1];  
+                                 date[j-1] = date[j];  
+                                 date[j] = temp;  
+                         }  
+                          
+                 }  
+         }
+        
+        for (int i = 0; i < n; i++) {
+             for (int j = 0; j < n; j++)
+             {
+                 if(date[i]==mails.get(j).getDate())
+            {
+             System.out.println(mails.get(j).getDate());
+             }
+             }
+          
         }
     }
    
@@ -65,11 +84,10 @@ public final class MailBox extends javax.swing.JFrame {
                 row[0] = mails.get(i).getDate();
                 row[1] = mails.get(i).getSender();
                 row[2] = mails.get(i).getSubjectA();
-
+                row[3]=mails.get(i).getBodyA();
                 jTextPane1.setText(mails.get(i).getBodyA());
                 model.addRow(row);
-
-            }
+             }
         }
     }
 
