@@ -24,8 +24,8 @@ public final class MailBox extends javax.swing.JFrame {
     ResultSet rs = null;
     Connection con = ConnectDB.connect();
     static ArrayList<Mails> mails = new ArrayList<>();
-     static String sender[]=new String[100000];
-     static int date[]=new int[100000];
+    static String sender[] = new String[100000];
+    static int date[] = new int[100000];
 
     public MailBox() {
         initComponents();
@@ -33,40 +33,42 @@ public final class MailBox extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
     }
-    
-   void SortBySender()
-    {
+
+    void SortByDate() {
+        refreshTable();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         for (int i = 0; i < mails.size(); i++) {
-         date[i]=mails.get(i).getDate();
+            date[i] = mails.get(i).getDate();
         }
-        
-          int temp = 0;  
-          int n=mails.size();
-         for(int i=0; i <n ; i++){  
-                 for(int j=1; j < (n-i); j++){  
-                          if(date[j-1] > date[j]){  
-                            
-                            temp = date[j-1];  
-                                 date[j-1] = date[j];  
-                                 date[j] = temp;  
-                         }  
-                          
-                 }  
-         }
-        
+
+        int temp = 0;
+        int n = mails.size();
         for (int i = 0; i < n; i++) {
-             for (int j = 0; j < n; j++)
-             {
-                 if(date[i]==mails.get(j).getDate())
-            {
-             System.out.println(mails.get(j).getDate());
-             }
-             }
-          
+            for (int j = 1; j < (n - i); j++) {
+                if (date[j - 1] > date[j]) {
+
+                    temp = date[j - 1];
+                    date[j - 1] = date[j];
+                    date[j] = temp;
+                }
+
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (date[i] == mails.get(j).getDate()) {
+                    Object[] row = new Object[4];
+                    row[0] = mails.get(j).getDate();
+                    row[1] = mails.get(j).getSender();
+                    row[2] = mails.get(j).getSubjectA();
+                    row[3] = mails.get(j).getBodyA(); 
+                    model.addRow(row);
+                }
+            }
+
         }
     }
-   
- 
 
     void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -84,10 +86,10 @@ public final class MailBox extends javax.swing.JFrame {
                 row[0] = mails.get(i).getDate();
                 row[1] = mails.get(i).getSender();
                 row[2] = mails.get(i).getSubjectA();
-                row[3]=mails.get(i).getBodyA();
+                row[3] = mails.get(i).getBodyA();
                 jTextPane1.setText(mails.get(i).getBodyA());
                 model.addRow(row);
-             }
+            }
         }
     }
 
@@ -379,11 +381,11 @@ public final class MailBox extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-    SortBySender();
+        SortByDate();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
-    
+
     }//GEN-LAST:event_jTextField1MousePressed
 
     private void jTextField1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseEntered
@@ -391,7 +393,7 @@ public final class MailBox extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1MouseEntered
 
     private void jTextField1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseExited
-  jTextField1.setText("Search mail by sender");
+        jTextField1.setText("Search mail by sender");
     }//GEN-LAST:event_jTextField1MouseExited
 
     /**
