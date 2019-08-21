@@ -7,9 +7,15 @@ package GoMailMain;
 
 import static GoMailMain.LoginAndSignUp.LoggedEmail;
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 
@@ -61,7 +67,7 @@ public final class MailBox extends javax.swing.JFrame {
                     row[0] = mails.get(j).getDate();
                     row[1] = mails.get(j).getSender();
                     row[2] = mails.get(j).getSubjectA();
-                    row[3] = mails.get(j).getBodyA(); 
+                    row[3] = mails.get(j).getBodyA();
                     model.addRow(row);
                 }
             }
@@ -159,7 +165,7 @@ public final class MailBox extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
 
-        jPanel1.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel1.setBackground(new java.awt.Color(43, 87, 151));
 
         jButton1.setText("Compose ");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -201,7 +207,7 @@ public final class MailBox extends javax.swing.JFrame {
 
         jLayeredPane1.setLayout(new java.awt.CardLayout());
 
-        panel_inbox.setBackground(new java.awt.Color(102, 51, 255));
+        panel_inbox.setBackground(new java.awt.Color(218, 83, 44));
         panel_inbox.setLayout(null);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -220,6 +226,8 @@ public final class MailBox extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setGridColor(new java.awt.Color(255, 102, 102));
+        jTable1.setSelectionForeground(new java.awt.Color(102, 153, 0));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
@@ -230,7 +238,7 @@ public final class MailBox extends javax.swing.JFrame {
         panel_inbox.add(jScrollPane2);
         jScrollPane2.setBounds(0, 86, 370, 624);
 
-        jTextPane1.setBackground(new java.awt.Color(51, 255, 51));
+        jTextPane1.setBackground(new java.awt.Color(239, 244, 255));
         jScrollPane3.setViewportView(jTextPane1);
 
         panel_inbox.add(jScrollPane3);
@@ -363,16 +371,27 @@ public final class MailBox extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            c = "insert into mails(sender,receiver,subject,body) values (?,?,?,?)";
+            java.util.Date d = Calendar.getInstance().getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("ddMMYYYY");
+            String s = formatter.format(d);
+            int x=Integer.parseInt(s);
+            
+            c = "insert into mails(sender,receiver,subject,body,date) values (?,?,?,?,?)";
             stm = con.prepareStatement(c);
             stm.setString(1, LoginAndSignUp.LoggedEmail);
             stm.setString(2, txtEmail_Receiver.getText());
             stm.setString(3, txtEmail_Subject.getText());
             stm.setString(4, txtpEmailBody.getText());
+            stm.setInt(5, x);
 
             stm.execute();
-            con.close();
-
+           
+            JOptionPane.showMessageDialog(null, "Sent", "Success", JOptionPane.INFORMATION_MESSAGE);
+            txtEmail_Receiver.setText(null);
+            txtEmail_Subject.setText(null);
+            txtpEmailBody.setText(null);
+            
+            
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -401,13 +420,12 @@ public final class MailBox extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1MouseExited
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         int selected_row = jTable1.getSelectedRow();
-       jTextPane1.setText(model.getValueAt(selected_row,3).toString());
-        
+        jTextPane1.setText(model.getValueAt(selected_row, 3).toString());
+
     }//GEN-LAST:event_jTable1MouseClicked
 
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
