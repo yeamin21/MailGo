@@ -24,6 +24,7 @@ public final class MailBox extends javax.swing.JFrame {
     ResultSet rs = null;
     Connection con = ConnectDB.connect();
     static ArrayList<Mails> mails = new ArrayList<>();
+     static String sender[]=new String[100000];
 
     public MailBox() {
         initComponents();
@@ -31,6 +32,22 @@ public final class MailBox extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
     }
+    
+   void SortBySender()
+    {
+        for (int i = 0; i < mails.size(); i++) {
+          sender[i]=mails.get(i).getSender();
+        }
+        
+        for (int i = 0; i < mails.size(); i++) {
+          if(sender[i]==mails.get(i).getSender())
+          {
+             
+          }
+        }
+    }
+   
+ 
 
     void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -196,6 +213,17 @@ public final class MailBox extends javax.swing.JFrame {
         jScrollPane3.setBounds(366, 86, 400, 624);
 
         jTextField1.setText("search email by sender");
+        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jTextField1MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jTextField1MouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTextField1MousePressed(evt);
+            }
+        });
         panel_inbox.add(jTextField1);
         jTextField1.setBounds(470, 30, 210, 20);
 
@@ -333,8 +361,20 @@ public final class MailBox extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-
+    SortBySender();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
+    
+    }//GEN-LAST:event_jTextField1MousePressed
+
+    private void jTextField1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseEntered
+        jTextField1.setText(null);
+    }//GEN-LAST:event_jTextField1MouseEntered
+
+    private void jTextField1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseExited
+  jTextField1.setText("Search mail by sender");
+    }//GEN-LAST:event_jTextField1MouseExited
 
     /**
      * @param args the command line arguments
