@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+
 import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,12 +31,84 @@ public final class MailBox extends javax.swing.JFrame {
     ResultSet rs = null;
     Connection con = ConnectDB.connect();
     static ArrayList<Mails> mails = new ArrayList<>();
-    static int date[] = new int[100000];
+    static int date[] = new int[1000];
+    static String sender[] = new String[1000];
 
     public MailBox() {
         initComponents();
         getMails();
         this.setLocationRelativeTo(null);
+
+    }
+
+    void SortBySender() {
+        refreshTable();
+        String sender[] = new String[mails.size()];
+        for (int i = 0; i < mails.size(); i++) {
+            sender[i] = mails.get(i).getSender();
+        }
+        mSort(sender, 0, sender.length - 1);
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        for (int i = 0; i < mails.size(); i++) {
+
+            for (int j = 0; j < mails.size(); j++) {
+                if (sender[i] == mails.get(j).getSender()) {
+                    Object[] row = new Object[4];
+                    row[0] = mails.get(j).getDate();
+                    row[1] = mails.get(j).getSender();
+                    row[2] = mails.get(j).getSubjectA();
+                    row[3] = mails.get(j).getBodyA();
+                    model.addRow(row);
+                }
+            }
+
+        }
+    }
+
+    public static void mSort(String[] a, int from, int to) {
+        if (from == to) {
+            return;
+        }
+        int mid = (from + to) / 2;
+
+        mSort(a, from, mid);
+        mSort(a, mid + 1, to);
+        merge(a, from, mid, to);
+    }
+
+    public static void merge(String[] a, int from, int mid, int to) {
+        int n = to - from + 1;
+        String[] b = new String[n];
+        int i1 = from;
+        int i2 = mid + 1;
+        int j = 0;
+
+        while (i1 <= mid && i2 <= to) {
+            if (a[i1].compareTo(a[i2]) < 0) {
+                b[j] = a[i1];
+                i1++;
+            } else {
+                b[j] = a[i2];
+                i2++;
+            }
+            j++;
+        }
+
+        while (i1 <= mid) {
+            b[j] = a[i1];
+            i1++;
+            j++;
+        }
+
+        while (i2 <= to) {
+            b[j] = a[i2];
+            i2++;
+            j++;
+        }
+
+        for (j = 0; j < n; j++) {
+            a[from + j] = b[j];
+        }
 
     }
 
@@ -137,12 +210,13 @@ public final class MailBox extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         panel_inbox = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -153,6 +227,7 @@ public final class MailBox extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
         panel_compose = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtpEmailBody = new javax.swing.JTextPane();
@@ -181,15 +256,27 @@ public final class MailBox extends javax.swing.JFrame {
             }
         });
 
+        jButton8.setText("Log Out");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addComponent(jButton8)))
                 .addContainerGap(51, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -199,7 +286,9 @@ public final class MailBox extends javax.swing.JFrame {
                 .addComponent(jButton1)
                 .addGap(18, 18, 18)
                 .addComponent(jButton2)
-                .addContainerGap(421, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
+                .addComponent(jButton8)
+                .addGap(85, 85, 85))
         );
 
         getContentPane().add(jPanel1);
@@ -246,24 +335,18 @@ public final class MailBox extends javax.swing.JFrame {
 
         jTextField1.setText("search email by sender");
         jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jTextField1MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jTextField1MouseExited(evt);
-            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jTextField1MousePressed(evt);
             }
         });
         panel_inbox.add(jTextField1);
-        jTextField1.setBounds(470, 30, 210, 20);
+        jTextField1.setBounds(450, 30, 210, 20);
 
         jButton4.setText("Search");
         panel_inbox.add(jButton4);
         jButton4.setBounds(780, 31, 65, 23);
 
-        jButton5.setText("Sort");
+        jButton5.setText("Sort by Date");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -279,7 +362,16 @@ public final class MailBox extends javax.swing.JFrame {
             }
         });
         panel_inbox.add(jButton6);
-        jButton6.setBounds(690, 30, 65, 23);
+        jButton6.setBounds(665, 30, 90, 23);
+
+        jButton7.setText("Sort by Sender");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+        panel_inbox.add(jButton7);
+        jButton7.setBounds(140, 50, 130, 23);
 
         jLayeredPane1.add(panel_inbox, "card2");
 
@@ -350,32 +442,33 @@ public final class MailBox extends javax.swing.JFrame {
         jLayeredPane1.setBounds(290, 0, 770, 710);
 
         setBounds(0, 0, 1072, 748);
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         SwitchPanel(panel_compose);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }                                        
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
 
         SwitchPanel(panel_inbox);
         refreshTable();
         getMails();
 
 
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }                                        
 
-    private void txtEmail_ReceiverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmail_ReceiverActionPerformed
+    private void txtEmail_ReceiverActionPerformed(java.awt.event.ActionEvent evt) {                                                  
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtEmail_ReceiverActionPerformed
+    }                                                 
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+
         try {
             java.util.Date d = Calendar.getInstance().getTime();
             SimpleDateFormat formatter = new SimpleDateFormat("ddMMYYYY");
             String s = formatter.format(d);
-            int x=Integer.parseInt(s);
-            
+            int x = Integer.parseInt(s);
+
             c = "insert into mails(sender,receiver,subject,body,date) values (?,?,?,?,?)";
             stm = con.prepareStatement(c);
             stm.setString(1, LoginAndSignUp.LoggedEmail);
@@ -385,55 +478,59 @@ public final class MailBox extends javax.swing.JFrame {
             stm.setInt(5, x);
 
             stm.execute();
-           
+
             JOptionPane.showMessageDialog(null, "Sent", "Success", JOptionPane.INFORMATION_MESSAGE);
             txtEmail_Receiver.setText(null);
             txtEmail_Subject.setText(null);
             txtpEmailBody.setText(null);
-            
-            
+
         } catch (Exception e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    }                                        
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+
         refreshTable();
         print();
 
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }                                        
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         SortByDate();
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }                                        
 
-    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
-
-    }//GEN-LAST:event_jTextField1MousePressed
-
-    private void jTextField1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseEntered
+    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {                                         
         jTextField1.setText(null);
-    }//GEN-LAST:event_jTextField1MouseEntered
+    }                                        
 
-    private void jTextField1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseExited
-        jTextField1.setText("Search mail by sender");
-    }//GEN-LAST:event_jTextField1MouseExited
-
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {                                     
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         int selected_row = jTable1.getSelectedRow();
         jTextPane1.setText(model.getValueAt(selected_row, 3).toString());
 
-    }//GEN-LAST:event_jTable1MouseClicked
+    }                                    
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        this.dispose();
+        new LoginAndSignUp().setVisible(true);
+    }                                        
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        SortBySender();     // TODO add your handling code here:
+    }                                        
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLayeredPane jLayeredPane1;
@@ -449,5 +546,5 @@ public final class MailBox extends javax.swing.JFrame {
     private javax.swing.JTextField txtEmail_Receiver;
     private javax.swing.JTextField txtEmail_Subject;
     private javax.swing.JTextPane txtpEmailBody;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
