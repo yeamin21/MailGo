@@ -4,8 +4,8 @@ For searching we used Linear Search algorithm
 For sorting we used two algorithms:
               1. Bubble Searching (sorting mails by date)
               2. Merge Sort (sorting mails by senders email)
-The frontend was developed by JAVA Swing
-Backend was developed by sqlite3
+Frontend- JAVA Swing,
+Backend- sqlite3
 
 ## Screenshot Of Login Page
 ![image](https://github.com/yeamin21/MailGo/blob/master/69054710_665788217231232_7253383199466717184_n.png?raw=true)
